@@ -14,17 +14,17 @@ consumes:
 produces:
   - application/json
 paths:
-  /courses:
+  /user_device:
     post:
-      summary: Creates a new course
-      operationId: createCourse
+      summary: Creates a new relation between user and devices
+      operationId: createUserDevice
       parameters:
-        - name: course
+        - user: userId
           in: body
           required: true
-          description: Course Object
+          description: The identification of the user to be related with the device
           schema:
-            $ref: '#/definitions/CourseInput'
+            $ref:
       responses:
         '201':
           description: Created

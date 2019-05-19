@@ -1,30 +1,28 @@
 version: "3"
 services:
-  notification-ms:
-    container_name: notification-ms
+  notif-ms:
+    container_name: notif-ms
     build: ./
     restart: on-failure
     ports:
       - 9000:9000
     depends_on:
-      - notification-db
-      - notification-gorush
+      - notif-db
+      - notif-gorush
     environment:
       - FIREBASE_API_KEY=${FIREBASE_API_KEY}
       - REDIS_URL="${NOTIF_IP}:9001"
       - GORUSH_HOST="${NOTIF_IP}:9002"
 
-  notification-db:
+  notif-db:
     image: redis:5-alpine
-    container_name: notification-db
+    container_name: notif-db
     ports:
       - 9001:6379
 
-  notification-gorush:
+  notif-gorush:
     image: appleboy/gorush
-    container_name: notification-gorush
+    container_name: notif-gorush
     ports:
       - 9002:8088
-    command:
-      - git clone https://github.com/clifford-un/notification-ms -c develop
-      - gorush -c ${PWD}/notification-ms/gorush_config.yml:/config.yml
+    entrypoint: 'gorush -k "${FIREBASE_API_KEY}"'
