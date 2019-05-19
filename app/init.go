@@ -1,6 +1,8 @@
 package app
 
 import (
+	"github.com/go-redis/redis"
+	"github.com/prometheus/common/log"
 	"github.com/revel/revel"
 )
 
@@ -10,6 +12,12 @@ var (
 
 	// BuildTime revel app build-time (ldflags)
 	BuildTime string
+
+	// Redis Connection
+	RedisClient *redis.Client
+
+	// Firebase API Key")
+	CliFirebaseApiKey string
 )
 
 func init() {
@@ -36,6 +44,9 @@ func init() {
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
 	// revel.OnAppStart(FillCache)
+
+	revel.OnAppStart(initREDIS)
+	revel.OnAppStart(getFirebaseAPIKey)
 }
 
 // HeaderFilter adds common security headers
@@ -57,3 +68,27 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //		// Dev mode
 //	}
 //}
+
+func initREDIS() {
+	RedisClient = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	pong, err := RedisClient.Ping().Result()
+	if err != nil {
+		log.Errorln("No Redis Connection : Will not work!")
+	} else {
+		log.Info("Revel pong: ", pong, " with errors: ", err)
+	}
+}
+
+func getFirebaseAPIKey() {
+	key, err := revel.Config.String("firebase.apiKey")
+	if err {
+		log.Errorln("No Firebase Key : Will not work!")
+	} else {
+		log.Info("Firebase API Key : " + key)
+	}
+	CliFirebaseApiKey = key
+}
