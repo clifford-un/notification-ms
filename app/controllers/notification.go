@@ -1,9 +1,10 @@
 package controllers
 
 import (
+	"math/rand"
 	"notification-ms/app"
+	"strconv"
 
-	"github.com/prometheus/common/log"
 	"github.com/revel/revel"
 )
 
@@ -34,7 +35,7 @@ func getNotificationRedisDic(id string) map[string]interface{} {
 }
 
 func storeNorification(user string, device string, topic string, message string) string {
-	id := "1"
+	id := strconv.Itoa(rand.Intn(1000))
 	app.RedisClient.Set("notif/"+id+"/user", user, 0).Result()
 	app.RedisClient.Set("notif/"+id+"/device", device, 0).Result()
 	app.RedisClient.Set("notif/"+id+"/topic", topic, 0).Result()
@@ -43,11 +44,6 @@ func storeNorification(user string, device string, topic string, message string)
 }
 
 func sentNotification(user string, device string, topic string, message string) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Errorln("Could not sent notification!")
-		}
-	}()
 	sendAndroidNotification(device, topic, message)
 }
 

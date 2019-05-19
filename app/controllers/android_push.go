@@ -1,20 +1,39 @@
 package controllers
 
 import (
-	"github.com/clifford-un/gorush/gorush"
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"notification-ms/app"
+
+	"github.com/prometheus/common/log"
 )
 
+type answer struct {
+	notifications []notification
+}
+type notification struct {
+	tokens   []string
+	platform string
+	message  string
+	title    string
+}
+
 func sendAndroidNotification(token string, message string, title string) {
-	gorush.PushConf.Android.APIKey = ADD HERE API KEY
-	//gorush.PushConf.Android.APIKey = app.CliFirebaseApiKey
-
-	gorush.PushConf.Android.Enabled = true
-	req := gorush.PushNotification{
-		Platform: gorush.PlatFormAndroid,
-		Message:  message,
-		Title:    title,
+	var answer = make(map[string]interface{})
+	answer["notifications"] = []map[string]interface{}{
+		make(map[string]interface{}),
 	}
-	req.Tokens = []string{token}
-
-	gorush.PushToAndroid(req)
+	answer["notifications"].([]map[string]interface{})[0]["tokens"] = []string{
+		token,
+	}
+	answer["notifications"].([]map[string]interface{})[0]["platform"] = 2
+	answer["notifications"].([]map[string]interface{})[0]["message"] = "message"
+	answer["notifications"].([]map[string]interface{})[0]["title"] = "title"
+	jsonValues, _ := json.Marshal(answer)
+	_, err := http.Post("http://"+app.GoRushHost+"/api/push", "application/json", bytes.NewBuffer(jsonValues))
+	bytes.NewBuffer(jsonValues)
+	if err != nil {
+		log.Error("Could not send notification")
+	}
 }

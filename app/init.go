@@ -18,6 +18,9 @@ var (
 
 	// Firebase API Key")
 	CliFirebaseApiKey string
+
+	// GoRush host
+	GoRushHost string
 )
 
 func init() {
@@ -47,6 +50,7 @@ func init() {
 
 	revel.OnAppStart(initREDIS)
 	revel.OnAppStart(getFirebaseAPIKey)
+	revel.OnAppStart(getGoRushHost)
 }
 
 // HeaderFilter adds common security headers
@@ -70,13 +74,14 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //}
 
 func initREDIS() {
+	key, found := revel.Config.String("redis.url")
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     key,
 		Password: "",
 		DB:       0,
 	})
 	pong, err := RedisClient.Ping().Result()
-	if err != nil {
+	if err != nil || !found {
 		log.Errorln("No Redis Connection : Will not work!")
 	} else {
 		log.Info("Revel pong: ", pong, " with errors: ", err)
@@ -84,11 +89,21 @@ func initREDIS() {
 }
 
 func getFirebaseAPIKey() {
-	key, err := revel.Config.String("firebase.apiKey")
-	if err {
-		log.Errorln("No Firebase Key : Will not work!")
-	} else {
+	key, found := revel.Config.String("firebase.apiKey")
+	if found {
 		log.Info("Firebase API Key : " + key)
+	} else {
+		log.Errorln("No Firebase Key : Will not work!")
 	}
 	CliFirebaseApiKey = key
+}
+
+func getGoRushHost() {
+	key, found := revel.Config.String("gorush.host")
+	if found {
+		log.Info("GoRush host: " + key)
+	} else {
+		log.Errorln("No GoRush host: Will not work!")
+	}
+	GoRushHost = key
 }
