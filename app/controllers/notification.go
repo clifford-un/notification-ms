@@ -44,7 +44,7 @@ func storeNorification(user string, device string, topic string, message string)
 }
 
 func sentNotification(user string, device string, topic string, message string) {
-	sendAndroidNotification(device, topic, message)
+	sendAndroidNotification(device, message, topic)
 }
 
 func (notif Notification) Show() revel.Result {

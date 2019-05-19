@@ -28,8 +28,8 @@ func sendAndroidNotification(token string, message string, title string) {
 		token,
 	}
 	answer["notifications"].([]map[string]interface{})[0]["platform"] = 2
-	answer["notifications"].([]map[string]interface{})[0]["message"] = "message"
-	answer["notifications"].([]map[string]interface{})[0]["title"] = "title"
+	answer["notifications"].([]map[string]interface{})[0]["message"] = message
+	answer["notifications"].([]map[string]interface{})[0]["title"] = title
 	jsonValues, _ := json.Marshal(answer)
 	_, err := http.Post("http://"+app.GoRushHost+"/api/push", "application/json", bytes.NewBuffer(jsonValues))
 	bytes.NewBuffer(jsonValues)
