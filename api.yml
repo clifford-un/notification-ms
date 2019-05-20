@@ -1,10 +1,12 @@
+#Test with: http://editor.swagger.io/
+
 swagger: '2.0'
 info:
   version: 1.0.0
   title: Microservice for Notification Handling
   description: Go + Redis
-  license: MIT LICENSE
-    name: Software Architecture. 2019-I
+  license:
+    name: Software Architecture, 2019-I
 host: 192.168.99.101:9000
 basePath: /notification
 schemes:
@@ -16,171 +18,114 @@ produces:
 paths:
   /user_device:
     post:
-      summary: Creates a new relation between user and devices
-      operationId: createUserDevice
-      parameters:
-        - user: userId
+      summary: Creates a new retation between users and devices
+      operationId: User.Create
+      parameters: 
+        - name: user
           in: body
           required: true
-          description: The identification of the user to be related with the device
+          description: user to be saved
           schema:
-            $ref:
-      responses:
-        '201':
-          description: Created
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-    get:
-      summary: Returns all courses
-      operationId: getAllCourses
+            $ref: '#/definitions/UserInput'
       responses:
         '200':
-          description: Ok
+          description: 'Ok'
           schema:
-            $ref: '#/definitions/CoursesList'
-        '406':
-          description: Not Acceptable (Invalid Params)
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-
-  /courses/{code}:
+            $ref: '#/definitions/UserDevice'
     get:
-      summary: Returns a course with the given code
-      operationId: getCourseByCode
+      summary: Returns a user with his device
+      operationId: User.Show
       parameters:
-        - name: code
+        - name: id
           in: path
-          description: The code of the course to be returned
           required: true
-          type: integer
+          description: the identification of the user to be returned
+          type: string
       responses:
         '200':
-          description: Ok
+          description: 'Ok'
           schema:
-            $ref: '#/definitions/Course'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '406':
-            description: Not Acceptable (Invalid Params)
-            schema:
-              $ref: '#/definitions/ErrorModel'
-        '500':
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorModel'
+            $ref: '#/definitions/UserDevice'
+          
 
-    put:
-      summary: Updates a course with the given code
-      operationId: updateCourse
+  /notification:
+    post:
+      summary: Creates a new notificationand sent it to the user
+      operationId: Notification.Send
       parameters:
-        - name: code
-          in: path
-          description: The code of the course to be updated
-          required: true
-          type: integer
-        - name: course
+        - name: notificationObject
           in: body
           required: true
-          description: Course Object
+          description: the notification to be sent
           schema:
-            $ref: '#/definitions/CourseInput'
-      responses:
-        '204':
-          description: No Content
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '406':
-            description: Not Acceptable (Invalid Params)
-            schema:
-              $ref: '#/definitions/ErrorModel'
-        '500':
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-
-    delete:
-      summary: Deletes a course with the given code
-      operationId: deleteCourse
-      parameters:
-        - name: code
-          in: path
-          description: The code of the course to be deleted
-          required: true
-          type: integer
+            $ref: '#/definitions/NotificationInput'
       responses:
         '200':
-          description: Ok
-        '404':
-          description: Not Found
+          description: 'Ok'
           schema:
-            $ref: '#/definitions/ErrorModel'
-        '406':
-            description: Not Acceptable (Invalid Params)
-            schema:
-              $ref: '#/definitions/ErrorModel'
-        '500':
-          description: unexpected error
+            $ref: '#/definitions/Notification'
+    get:
+      summary: Returns a notification
+      operationId: Notification.Show
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: the id of the notificatio
+      responses:
+        '200':
+          description: 'Ok'
           schema:
-            $ref: '#/definitions/ErrorModel'
+            $ref: '#/definitions/Notification'
+
 
 definitions:
 
-  # Courses
-  Course:
+  # User
+  UserDevice:
     type: object
     properties:
-      code:
-        type: integer
-      name:
+      user:
         type: string
-      credits:
-        type: integer
-
-  CourseInput:
-    type: object
-    properties:
-      name:
+      device:
         type: string
-      credits:
+        
+  UserInput:
+    type: object
+    properties:
+      user:
+        type: string
+      device:
+        type: string
+
+  #Notifications
+  Notification:
+    type: object
+    properties:
+      id:
         type: integer
-
-  CoursesList:
-    type: object
-    required:
-      - total
-      - list
-    properties:
-      total:
-        type: number
-      list:
-        type: array
-        items:
-          $ref: '#/definitions/Course'
-
-# Errors
-  ErrorModel:
-    type: object
-    required:
-      - message
-      - code
-    properties:
+      user:
+        type: string
+      device:
+        type: string
+      topic: 
+        type: string
       message:
         type: string
-      code:
-        type: number
-      description:
-        type: object
+  
+  NotificationInput:
+    type: object
+    required:
+      - user
+      - topic
+      - message
+    properties:
+      user:
+        type: string
+      device:
+        type: string
+      topic: 
+        type: string
+      message:
+        type: string
