@@ -4,6 +4,7 @@ import (
 	"github.com/revel/revel"
 )
 
+// App
 type App struct {
 	*revel.Controller
 }

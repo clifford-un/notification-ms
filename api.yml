@@ -1,0 +1,131 @@
+#Test with: http://editor.swagger.io/
+
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Microservice for Notification Handling
+  description: Go + Redis
+  license:
+    name: Software Architecture, 2019-I
+host: 192.168.99.101:9000
+basePath: /notification
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /user_device:
+    post:
+      summary: Creates a new retation between users and devices
+      operationId: User.Create
+      parameters: 
+        - name: user
+          in: body
+          required: true
+          description: user to be saved
+          schema:
+            $ref: '#/definitions/UserInput'
+      responses:
+        '200':
+          description: 'Ok'
+          schema:
+            $ref: '#/definitions/UserDevice'
+    get:
+      summary: Returns a user with his device
+      operationId: User.Show
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: the identification of the user to be returned
+          type: string
+      responses:
+        '200':
+          description: 'Ok'
+          schema:
+            $ref: '#/definitions/UserDevice'
+          
+
+  /notification:
+    post:
+      summary: Creates a new notificationand sent it to the user
+      operationId: Notification.Send
+      parameters:
+        - name: notificationObject
+          in: body
+          required: true
+          description: the notification to be sent
+          schema:
+            $ref: '#/definitions/NotificationInput'
+      responses:
+        '200':
+          description: 'Ok'
+          schema:
+            $ref: '#/definitions/Notification'
+    get:
+      summary: Returns a notification
+      operationId: Notification.Show
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+          description: the id of the notificatio
+      responses:
+        '200':
+          description: 'Ok'
+          schema:
+            $ref: '#/definitions/Notification'
+
+
+definitions:
+
+  # User
+  UserDevice:
+    type: object
+    properties:
+      user:
+        type: string
+      device:
+        type: string
+        
+  UserInput:
+    type: object
+    properties:
+      user:
+        type: string
+      device:
+        type: string
+
+  #Notifications
+  Notification:
+    type: object
+    properties:
+      id:
+        type: integer
+      user:
+        type: string
+      device:
+        type: string
+      topic: 
+        type: string
+      message:
+        type: string
+  
+  NotificationInput:
+    type: object
+    required:
+      - user
+      - topic
+      - message
+    properties:
+      user:
+        type: string
+      device:
+        type: string
+      topic: 
+        type: string
+      message:
+        type: string

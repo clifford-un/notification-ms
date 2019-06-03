@@ -7,7 +7,19 @@ module:testrunner
 # module:jobs
 
 
-GET     /                                       App.Index
+GET     /                                        App.Index
+
+GET      /test                                   Test.Index
+GET      /test/:id                               Test.Show
+#POST    /test                                   Test.Create
+#PUT     /test                                   Test.Update
+#DELETE  /test/:id                               Test.Delete
+
+GET      /user_device/:user                      User.Show                       
+PUT      /user_device                            User.Create                       
+
+GET      /notification/:id                       Notification.Show                       
+PUT      /notification                           Notification.Send      
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
