@@ -1,7 +1,6 @@
 version: "3"
 services:
   notif-ms:
-    container_name: notif-ms
     build: ./
     restart: on-failure
     ports:
@@ -16,13 +15,11 @@ services:
 
   notif-db:
     image: redis:5-alpine
-    container_name: notif-db
     ports:
       - 9001:6379
 
   notif-gorush:
     image: appleboy/gorush
-    container_name: notif-gorush
     ports:
       - 9002:8088
     entrypoint: 'gorush -k "${FIREBASE_API_KEY}"'
