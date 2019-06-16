@@ -7,18 +7,18 @@ services:
       - 9000:9000
     depends_on:
       - notif-db
-      - notif-gorush
+      - notif-gr
     environment:
       - FIREBASE_API_KEY=${FIREBASE_API_KEY}
-      - REDIS_URL="${NOTIF_IP}:9001"
-      - GORUSH_HOST="${NOTIF_IP}:9002"
+      - REDIS_URL="notif-db:6379"
+      - GORUSH_HOST="notif-gr:8088"
 
   notif-db:
     image: redis:5-alpine
     ports:
       - 9001:6379
 
-  notif-gorush:
+  notif-gr:
     image: appleboy/gorush
     ports:
       - 9002:8088
