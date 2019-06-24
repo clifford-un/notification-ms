@@ -50,7 +50,6 @@ func init() {
 
 	revel.OnAppStart(initREDIS)
 	revel.OnAppStart(getFirebaseAPIKey)
-	revel.OnAppStart(getGoRushHost)
 }
 
 // HeaderFilter adds common security headers
@@ -95,15 +94,5 @@ func getFirebaseAPIKey() {
 	} else {
 		log.Errorln("No Firebase Key : Will not work!")
 	}
-	CliFirebaseApiKey = key
-}
-
-func getGoRushHost() {
-	key, found := revel.Config.String("gorush.host")
-	if found {
-		log.Info("GoRush host: " + key)
-	} else {
-		log.Errorln("No GoRush host: Will not work!")
-	}
-	GoRushHost = key
+	CliFirebaseApiKey = "key=" + key
 }
